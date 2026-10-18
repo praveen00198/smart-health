@@ -55,7 +55,10 @@ export async function GET() {
       },
     });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Failed to query database counts";
+    const err = error as { message?: string; cause?: { message?: string } };
+    const message = err.cause?.message
+      ? `${err.message || "Query failed"}: ${err.cause.message}`
+      : err.message || "Failed to query database counts";
     return NextResponse.json(
       {
         status: "unhealthy",
