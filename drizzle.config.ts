@@ -1,4 +1,8 @@
+import { config } from "dotenv";
 import { defineConfig } from "drizzle-kit";
+
+// Load local environment variables from .env.local
+config({ path: ".env.local" });
 
 const connectionString = process.env.DATABASE_URL || process.env.SUPABASE_DB_URL;
 
