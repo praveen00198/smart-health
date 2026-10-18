@@ -9,17 +9,15 @@ export function RealtimeAlertsListener() {
   const [realtimeNotification, setRealtimeNotification] = useState<string | null>(null);
 
   useEffect(() => {
-    // Only subscribe if Supabase URL and key are configured
-    const hasSupabase =
-      process.env.NEXT_PUBLIC_SUPABASE_URL &&
-      (process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
-
-    if (!hasSupabase) {
+    // Only subscribe if Supabase client is initialized
+    if (!supabase) {
       return;
     }
 
+    const client = supabase;
+
     try {
-      const channel = supabase
+      const channel = client
         .channel("realtime-alerts-channel")
         .on(
           "postgres_changes",
@@ -38,7 +36,7 @@ export function RealtimeAlertsListener() {
         .subscribe();
 
       return () => {
-        supabase.removeChannel(channel);
+        client.removeChannel(channel);
       };
     } catch (err) {
       console.warn("Supabase realtime subscription deferred:", err);
